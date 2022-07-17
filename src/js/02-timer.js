@@ -1,6 +1,7 @@
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
-import { Confirm } from 'notiflix/build/notiflix-confirm-aio';
+import Notiflix from 'notiflix';
+
 const btnStart = document.querySelector('button[data-start]');
 btnStart.disabled = true;
 
@@ -20,11 +21,8 @@ const options = {
   onClose(selectedDates) {
 
     if (selectedDates[0] < date.minDate) {
-
-      alert('Please choose a date in the future!');
-
-      btnStart.disabled = true;
-
+    Notiflix.Notify.failure('Please choose a date in the future!');
+    btnStart.disabled = true;
     }
     if (selectedDates[0] > date.minDate) {
       btnStart.disabled = false;
