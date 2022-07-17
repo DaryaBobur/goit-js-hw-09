@@ -26,7 +26,7 @@ const options = {
     }
     if (selectedDates[0] > date.minDate) {
       btnStart.disabled = false;
-      clickOpens = true;
+  
     }
     console.log(selectedDates[0]);
 
