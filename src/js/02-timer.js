@@ -1,11 +1,10 @@
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import { Confirm } from 'notiflix/build/notiflix-confirm-aio';
-
 const btnStart = document.querySelector('button[data-start]');
 btnStart.disabled = true;
 
- const valueDays = document.querySelector('[data-days]');
+const valueDays = document.querySelector('[data-days]');
 const valueHours = document.querySelector('[data-hours]');
 const valueMinutes = document.querySelector('[data-minutes]');
 const valueSeconds = document.querySelector('[data-seconds]');
@@ -15,63 +14,61 @@ const options = {
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
-    onClose(selectedDates) {
+  locale: {
+    "firstDayOfWeek": 1 // start week on Monday
+  },
+  onClose(selectedDates) {
 
     if (selectedDates[0] < date.minDate) {
-        Confirm.show(
-            function cancelCb() {
-                alert('Please choose a date in the future!');
-            });
 
-        btnStart.disabled = true;
-      }
-      if (selectedDates[0] >= date.minDate) {
-        btnStart.disabled = false;
-        
+      alert('Please choose a date in the future!');
+
+      btnStart.disabled = true;
+
     }
-      console.log(selectedDates[0]);
-      
-  const dateFuture = selectedDates[0].getTime()
-  const dateToday = date.minDate.getTime();
-
-
-      
-function timer() {
-   btnStart.disabled = true;
-  const timerId = setInterval(() => {
-  const delta = new Date(dateFuture) - new Date();
-   const a = convertMs(delta);
-    valueDays.textContent = a.days;
-    valueHours.textContent = a.hours;
-    valueMinutes.textContent = a.minutes;
-    valueSeconds.textContent = a.seconds;
-  
-    if (delta <= 0) {
-      clearInterval(timerId);
+    if (selectedDates[0] > date.minDate) {
+      btnStart.disabled = false;
+      clickOpens = true;
     }
- 
+    console.log(selectedDates[0]);
 
-}, 1000)
- 
-   }    
- timer(new Date(dateToday));
+    const dateFuture = selectedDates[0].getTime()
+    const dateToday = date.minDate.getTime();
+
+    btnStart.addEventListener('click', timer);
+
+    function timer() {
+      btnStart.disabled = true;
+      const timerId = setInterval(() => {
+        const delta = new Date(dateFuture) - new Date();
+        const transformTime = convertMs(delta);
+        if (valueDays > 31) {
+          valueDays.textContent = addLeadingZeroDays(transformTime.days);
+        }
+        valueDays.textContent = addLeadingZero(transformTime.days);
+        valueHours.textContent = addLeadingZero(transformTime.hours);
+        valueMinutes.textContent = addLeadingZero(transformTime.minutes);
+        valueSeconds.textContent = addLeadingZero(transformTime.seconds);
+
+        if (delta <= 0) {
+          clearInterval(timerId);
+        valueDays.textContent = `00`;
+        valueHours.textContent = `00`;
+        valueMinutes.textContent = `00`;
+        valueSeconds.textContent = `00`;
+        }
+        timer(new Date(dateToday));
+      }, 1000)
+    }
   },
 };
 
-// function t(string) {
-//  document.querySelector('.sp').textContent = string;
-// }
-
-
-
 flatpickr("#datetime-picker", options);
 
-
 const date = {
-    minDate: new Date().fp_incr(0),
-    maxDate: new Date().fp_incr(365)
+  minDate: new Date().fp_incr(0),
+  maxDate: new Date().fp_incr()
 }
-
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -82,18 +79,18 @@ function convertMs(ms) {
 
   // Remaining days
   const days = Math.floor(ms / day);
-  // Remaining hours
   const hours = Math.floor((ms % day) / hour);
-  // Remaining minutes
   const minutes = Math.floor(((ms % day) % hour) / minute);
-  // Remaining seconds
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
   return { days, hours, minutes, seconds };
 
 }
 
-// console.log(convertMs(2000));
-// console.log(convertMs(140000));
-// console.log(convertMs(24140000));
+function addLeadingZero(value) {
+  return String(value).padStart(2, '0');
+}
 
+function addLeadingZeroDays(value, targetLength) {
+  return value.toString().padStart(targetLength, '0');
+}
