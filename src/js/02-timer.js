@@ -65,7 +65,6 @@ flatpickr("#datetime-picker", options);
 
 const date = {
   minDate: new Date().fp_incr(0),
-  maxDate: new Date().fp_incr()
 }
 
 function convertMs(ms) {
