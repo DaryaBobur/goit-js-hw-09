@@ -20,18 +20,16 @@ const options = {
   },
   onClose(selectedDates) {
 
-    if (selectedDates[0] < date.minDate) {
+    if (selectedDates[0] < new Date()) {
     Notiflix.Notify.failure('Please choose a date in the future!');
     btnStart.disabled = true;
     }
-    if (selectedDates[0] > date.minDate) {
+    if (selectedDates[0] > new Date()) {
       btnStart.disabled = false;
-  
     }
     console.log(selectedDates[0]);
 
     const dateFuture = selectedDates[0].getTime()
-    const dateToday = date.minDate.getTime();
 
     btnStart.addEventListener('click', timer);
 
@@ -40,9 +38,6 @@ const options = {
       const timerId = setInterval(() => {
         const delta = new Date(dateFuture) - new Date();
         const transformTime = convertMs(delta);
-        if (valueDays > 31) {
-          valueDays.textContent = addLeadingZeroDays(transformTime.days);
-        }
         valueDays.textContent = addLeadingZero(transformTime.days);
         valueHours.textContent = addLeadingZero(transformTime.hours);
         valueMinutes.textContent = addLeadingZero(transformTime.minutes);
@@ -55,17 +50,12 @@ const options = {
         valueMinutes.textContent = `00`;
         valueSeconds.textContent = `00`;
         }
-        timer(new Date(dateToday));
       }, 1000)
     }
   },
 };
 
 flatpickr("#datetime-picker", options);
-
-const date = {
-  minDate: new Date().fp_incr(0),
-}
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -86,8 +76,4 @@ function convertMs(ms) {
 
 function addLeadingZero(value) {
   return String(value).padStart(2, '0');
-}
-
-function addLeadingZeroDays(value, targetLength) {
-  return value.toString().padStart(targetLength, '0');
 }
