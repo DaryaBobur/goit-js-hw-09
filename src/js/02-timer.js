@@ -5,6 +5,9 @@ import Notiflix from 'notiflix';
 const btnStart = document.querySelector('button[data-start]');
 btnStart.disabled = true;
 
+btnStart.addEventListener('click', timer);
+
+const valueDateTime = document.querySelector('#datetime-picker');
 const valueDays = document.querySelector('[data-days]');
 const valueHours = document.querySelector('[data-hours]');
 const valueMinutes = document.querySelector('[data-minutes]');
@@ -21,41 +24,38 @@ const options = {
   onClose(selectedDates) {
 
     if (selectedDates[0] < new Date()) {
-    Notiflix.Notify.failure('Please choose a date in the future!');
-    btnStart.disabled = true;
+      Notiflix.Notify.failure('Please choose a date in the future!');
+      btnStart.disabled = true;
     }
     if (selectedDates[0] > new Date()) {
       btnStart.disabled = false;
     }
     console.log(selectedDates[0]);
+  },
+};
 
-    const dateFuture = selectedDates[0].getTime()
+flatpickr("#datetime-picker", options);
 
-    btnStart.addEventListener('click', timer);
+  function timer() {
+    btnStart.disabled = true;
+    valueDateTime.disabled = true;
 
-    function timer() {
-      btnStart.disabled = true;
       const timerId = setInterval(() => {
-        const delta = new Date(dateFuture) - new Date();
+        const delta = new Date(valueDateTime.value) - new Date();
         const transformTime = convertMs(delta);
         valueDays.textContent = addLeadingZero(transformTime.days);
         valueHours.textContent = addLeadingZero(transformTime.hours);
         valueMinutes.textContent = addLeadingZero(transformTime.minutes);
         valueSeconds.textContent = addLeadingZero(transformTime.seconds);
 
-        if (delta <= 0) {
+        
+        if (delta < 1000) {
           clearInterval(timerId);
-        valueDays.textContent = `00`;
-        valueHours.textContent = `00`;
-        valueMinutes.textContent = `00`;
-        valueSeconds.textContent = `00`;
         }
+        
       }, 1000)
+    
     }
-  },
-};
-
-flatpickr("#datetime-picker", options);
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -71,7 +71,6 @@ function convertMs(ms) {
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
   return { days, hours, minutes, seconds };
-
 }
 
 function addLeadingZero(value) {
